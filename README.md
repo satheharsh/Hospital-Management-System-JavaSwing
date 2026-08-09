@@ -71,6 +71,7 @@ Here is a gallery showcasing the application's key features and modules.
    ```
 
 ### Default Credentials
+- **URL:** `http://127.0.0.1:8080`
 - **Username:** `shrikar`
 - **Password:** `431001`
 
