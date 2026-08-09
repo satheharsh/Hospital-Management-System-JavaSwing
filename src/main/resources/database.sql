@@ -29,42 +29,29 @@ CREATE TABLE IF NOT EXISTS patients (
 
 -- Create employees table
 CREATE TABLE IF NOT EXISTS employees (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id VARCHAR(10) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    position VARCHAR(50) NOT NULL,
-    department VARCHAR(50) NOT NULL,
-    contact VARCHAR(20) NOT NULL,
+    age INT NOT NULL,
+    gender VARCHAR(10) NOT NULL,
     salary DECIMAL(10, 2) NOT NULL,
-    hire_date DATE NOT NULL
+    phone_number VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL
 );
 
 -- Create ambulances table
 CREATE TABLE IF NOT EXISTS ambulances (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    vehicle_number VARCHAR(20) NOT NULL,
+    ambulance_id VARCHAR(10) PRIMARY KEY,
     driver_name VARCHAR(100) NOT NULL,
-    contact VARCHAR(20) NOT NULL,
-    status VARCHAR(20) DEFAULT 'Available'
-);
-
--- Create ambulance_bookings table
-CREATE TABLE IF NOT EXISTS ambulance_bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ambulance_id INT NOT NULL,
-    patient_name VARCHAR(100) NOT NULL,
-    pickup_location TEXT NOT NULL,
-    destination TEXT NOT NULL,
-    booking_date DATETIME NOT NULL,
-    status VARCHAR(20) DEFAULT 'Pending',
-    FOREIGN KEY (ambulance_id) REFERENCES ambulances(id)
+    driver_phone VARCHAR(20) NOT NULL,
+    plate_number VARCHAR(20) NOT NULL,
+    is_available BOOLEAN DEFAULT TRUE
 );
 
 -- Create departments table
 CREATE TABLE IF NOT EXISTS departments (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    head_doctor VARCHAR(100) NOT NULL,
-    location VARCHAR(100) NOT NULL
+    name VARCHAR(50) PRIMARY KEY,
+    phone_number VARCHAR(20) NOT NULL
 );
 
 -- Create medical_records table

@@ -692,7 +692,7 @@ nextPatientId = existingPatients.stream()
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(0, 99, 177)); // Darker shade of Microsoft Blue
-        header.setForeground(Color.BLACK);
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         
@@ -807,7 +807,7 @@ nextPatientId = existingPatients.stream()
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(0, 99, 177)); // Darker shade of Microsoft Blue
-        header.setForeground(Color.BLACK);
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         
@@ -874,8 +874,8 @@ nextPatientId = existingPatients.stream()
         // Enhanced table header styling
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        header.setBackground(Color.BLACK); // Darker shade of Microsoft Blue
-        header.setForeground(Color.BLACK);
+        header.setBackground(new Color(0, 99, 177)); // Darker shade of Microsoft Blue
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         
@@ -952,7 +952,7 @@ nextPatientId = existingPatients.stream()
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(0, 99, 177)); // Darker shade of Microsoft Blue
-        header.setForeground(Color.BLACK);
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         
@@ -1170,26 +1170,22 @@ nextPatientId = existingPatients.stream()
             String selected = (String) patientCombo.getSelectedItem();
             if (selected != null) {
                 String patientId = selected.split(" - ")[0];
-                Patient patient = system.findPatientById(patientId);
-                if (patient != null) {
-                    try {
-                        double amountPaid = Double.parseDouble(amountPaidField.getText());
-                        if (amountPaid < 0) {
-                            JOptionPane.showMessageDialog(panel,
-                                "Amount paid cannot be negative",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                        
-                        patient.setAmountPaid(amountPaid);
-                        patient.setPendingAmount(patient.getDepositAmount() - amountPaid);
-                        patient.setDischargeDate(LocalDateTime.now());
-                        system.updatePatient(patient);
-                        
+                try {
+                    double amountPaid = Double.parseDouble(amountPaidField.getText());
+                    if (amountPaid < 0) {
+                        JOptionPane.showMessageDialog(panel,
+                            "Amount paid cannot be negative",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    boolean success = system.dischargePatient(patientId, amountPaid);
+                    if (success) {
+                        Patient patient = system.findPatientById(patientId);
                         JOptionPane.showMessageDialog(panel,
                             "Patient discharged successfully!\n" +
-                            "Pending Amount: ₹" + String.format("%.2f", patient.getPendingAmount()),
+                            "Pending Amount: ₹" + String.format("%.2f", patient != null ? patient.getPendingAmount() : 0.0),
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                             
@@ -1197,12 +1193,19 @@ nextPatientId = existingPatients.stream()
                         refreshPatientListPanel();
                         refreshDischargePanel();
                         refreshUpdatePatientPanel();
-                    } catch (NumberFormatException ex) {
+                        refreshRoomPanel();
+                        refreshSearchPanel();
+                    } else {
                         JOptionPane.showMessageDialog(panel,
-                            "Please enter a valid amount",
+                            "Failed to discharge patient.",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                     }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(panel,
+                        "Please enter a valid amount",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -1365,7 +1368,7 @@ nextPatientId = existingPatients.stream()
         JTableHeader header = resultsTable.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(0, 99, 177));
-        header.setForeground(Color.BLACK);
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         
@@ -1833,7 +1836,7 @@ nextPatientId = existingPatients.stream()
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(0, 99, 177)); // Darker shade of Microsoft Blue
-        header.setForeground(Color.BLACK);
+        header.setForeground(Color.WHITE);
         header.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR));
         header.setReorderingAllowed(false);
         

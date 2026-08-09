@@ -1,10 +1,8 @@
 package com.hospital.util;
 
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.nio.file.*;
 
 public class IconConverter {
@@ -17,39 +15,37 @@ public class IconConverter {
             resourceDir.mkdirs();
         }
 
-        // Convert all SVG files to PNG
         File[] svgFiles = resourceDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".svg"));
-        if (svgFiles != null) {
+        if (svgFiles != null && svgFiles.length > 0) {
             for (File svgFile : svgFiles) {
                 try {
                     String pngFileName = svgFile.getName().replace(".svg", ".png");
                     convertSvgToPng(svgFile.getPath(), resourcePath + pngFileName);
                     System.out.println("Converted " + svgFile.getName() + " to PNG");
-                } catch (Exception e) {
-                    System.err.println("Error converting " + svgFile.getName() + ": " + e.getMessage());
+                } catch (Throwable e) {
+                    System.err.println("Note: SVG conversion skipped for " + svgFile.getName() + " (" + e.getMessage() + ")");
                 }
             }
         }
     }
 
     private static void convertSvgToPng(String svgPath, String pngPath) throws Exception {
-        // Create a PNG transcoder
-        PNGTranscoder transcoder = new PNGTranscoder();
-        
-        // Set the transcoding hints
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, 48f);
-        transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, 48f);
+        Class<?> pngTranscoderClass = Class.forName("org.apache.batik.transcoder.image.PNGTranscoder");
+        Object transcoder = pngTranscoderClass.getDeclaredConstructor().newInstance();
 
-        // Create the transcoder input
+        Class<?> transcoderInputClass = Class.forName("org.apache.batik.transcoder.TranscoderInput");
+        Constructor<?> inputConst = transcoderInputClass.getConstructor(String.class);
         String svgURI = Paths.get(svgPath).toUri().toURL().toString();
-        TranscoderInput input = new TranscoderInput(svgURI);
+        Object input = inputConst.newInstance(svgURI);
 
-        // Create the transcoder output
+        Class<?> transcoderOutputClass = Class.forName("org.apache.batik.transcoder.TranscoderOutput");
+        Constructor<?> outputConst = transcoderOutputClass.getConstructor(OutputStream.class);
+
+        Method transcodeMethod = pngTranscoderClass.getMethod("transcode", transcoderInputClass, transcoderOutputClass);
+
         try (OutputStream outStream = new FileOutputStream(pngPath)) {
-            TranscoderOutput output = new TranscoderOutput(outStream);
-
-            // Perform the transcoding
-            transcoder.transcode(input, output);
+            Object output = outputConst.newInstance(outStream);
+            transcodeMethod.invoke(transcoder, input, output);
         }
     }
-} 
+}
