@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System - Web Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-icon">🏥</span>
+            <div class="brand-title">Hospital<br>Management</div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" data-target="dashboard">
+                <span class="nav-icon">📊</span> Dashboard
+            </li>
+            <li class="nav-item" data-target="patients">
+                <span class="nav-icon">👤</span> Patients
+            </li>
+            <li class="nav-item" data-target="add-patient">
+                <span class="nav-icon">➕</span> Admit Patient
+            </li>
+            <li class="nav-item" data-target="rooms">
+                <span class="nav-icon">🏠</span> Room Directory
+            </li>
+            <li class="nav-item" data-target="search-room">
+                <span class="nav-icon">🔍</span> Search & Book Rooms
+            </li>
+            <li class="nav-item" data-target="discharge">
+                <span class="nav-icon">🚪</span> Patient Discharge
+            </li>
+            <li class="nav-item" data-target="employees">
+                <span class="nav-icon">👨‍⚕️</span> Staff Directory
+            </li>
+            <li class="nav-item" data-target="departments">
+                <span class="nav-icon">🏥</span> Departments
+            </li>
+            <li class="nav-item" data-target="ambulances">
+                <span class="nav-icon">🚑</span> Ambulance Fleet
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <h1 class="header-title">Hospital Administration Workspace</h1>
+            <div class="user-profile">
+                <a href="/api/export/csv" class="btn btn-secondary" style="font-size:12px; padding: 6px 12px;">📥 Export Patients CSV</a>
+                <div class="user-badge">
+                    <div class="user-avatar">A</div>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+
+            <!-- 1. Dashboard View -->
+            <section id="dashboard" class="view-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper stat-blue">👤</div>
+                        <div>
+                            <div class="stat-label">Total Patients</div>
+                            <div class="stat-value" id="stat-total-patients">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper stat-green">🏠</div>
+                        <div>
+                            <div class="stat-label">Available Rooms</div>
+                            <div class="stat-value" id="stat-available-rooms">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper stat-orange">👨‍⚕️</div>
+                        <div>
+                            <div class="stat-label">Total Staff</div>
+                            <div class="stat-value" id="stat-total-employees">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrapper stat-purple">🚑</div>
+                        <div>
+                            <div class="stat-label">Active Ambulances</div>
+                            <div class="stat-value" id="stat-available-ambulances">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Quick System Actions</h2>
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="document.querySelector('[data-target=\'add-patient\']').click()">➕ Admit New Patient</button>
+                        <button class="btn btn-primary" onclick="document.querySelector('[data-target=\'search-room\']').click()">🔍 Book Room</button>
+                        <button class="btn btn-success" onclick="document.querySelector('[data-target=\'discharge\']').click()">🚪 Patient Discharge</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Patients View -->
+            <section id="patients" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Patient Records Directory</h2>
+                        <button class="btn btn-secondary" onclick="loadPatients()">🔄 Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Name</th>
+                                    <th>ID Details</th>
+                                    <th>Gender</th>
+                                    <th>Disease</th>
+                                    <th>Assigned Room</th>
+                                    <th>Admission Time</th>
+                                    <th>Deposit</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patients-tbody">
+                                <!-- Populated dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Add Patient View -->
+            <section id="add-patient" class="view-section">
+                <div class="panel-card" style="max-width: 700px; margin: 0 auto;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Admit New Patient</h2>
+                    </div>
+                    <form id="add-patient-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Patient ID Type</label>
+                                <select class="form-select" id="add-id-type">
+                                    <option value="Aadhar Card">Aadhar Card</option>
+                                    <option value="Voter ID">Voter ID</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ID Number</label>
+                                <input type="text" class="form-input" id="add-id-number" placeholder="Enter ID Number" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-input" id="add-name" placeholder="Patient Full Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" id="add-gender">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Diagnosed Disease</label>
+                                <input type="text" class="form-input" id="add-disease" placeholder="e.g. Fever, Fracture" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Initial Deposit Amount (₹)</label>
+                                <input type="number" step="0.01" class="form-input" id="add-deposit" placeholder="5000.00" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 24px; width: 100%;">Admit Patient</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. Rooms View -->
+            <section id="rooms" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Hospital Room Inventory</h2>
+                        <button class="btn btn-secondary" onclick="loadRooms()">🔄 Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Room Number</th>
+                                    <th>Bed Type</th>
+                                    <th>Price per Day</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rooms-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Search & Book Rooms View -->
+            <section id="search-room" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Search & Allocate Rooms</h2>
+                    </div>
+                    <div class="form-grid" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Select Patient</label>
+                            <select class="form-select" id="search-room-patient-select">
+                                <option value="">-- Select Patient --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Filter Bed Type</label>
+                            <select class="form-select" id="filter-bed-type">
+                                <option value="All">All Types</option>
+                                <option value="Single">Single</option>
+                                <option value="Double">Double</option>
+                                <option value="Suite">Suite</option>
+                                <option value="ICU">ICU</option>
+                                <option value="General Ward">General Ward</option>
+                                <option value="Deluxe">Deluxe</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Filter Price Range</label>
+                            <select class="form-select" id="filter-price-range">
+                                <option value="All">All Prices</option>
+                                <option value="Under 1500">Under ₹1500</option>
+                                <option value="1500-2500">₹1500 - ₹2500</option>
+                                <option value="Above 2500">Above ₹2500</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                        <button class="btn btn-secondary" id="btn-search-rooms">Filter Rooms</button>
+                    </div>
+
+                    <div class="form-group" style="max-width: 300px; margin-bottom: 15px;">
+                        <label class="form-label">Selected Room Number to Book</label>
+                        <input type="text" class="form-input" id="book-room-number-input" placeholder="e.g. S1, D2">
+                    </div>
+                    <button class="btn btn-primary" id="btn-book-room">Confirm Room Booking</button>
+                </div>
+            </section>
+
+            <!-- 6. Patient Discharge View -->
+            <section id="discharge" class="view-section">
+                <div class="panel-card" style="max-width: 600px; margin: 0 auto;">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Patient Settlement & Discharge</h2>
+                    </div>
+                    <form id="discharge-form">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label">Select Patient</label>
+                            <select class="form-select" id="discharge-patient-select">
+                                <option value="">-- Select Patient --</option>
+                            </select>
+                        </div>
+
+                        <div style="background: #f8fafc; padding: 16px; border-radius: 10px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>Patient Name:</span>
+                                <strong id="dis-name">-</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>Assigned Room:</span>
+                                <strong id="dis-room">-</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>Admission Date:</span>
+                                <strong id="dis-adm">-</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>Deposit Amount:</span>
+                                <strong id="dis-deposit">₹0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span>Already Paid:</span>
+                                <strong id="dis-paid">₹0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--danger);">
+                                <span>Pending Amount:</span>
+                                <strong id="dis-pending">₹0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Payment Amount Received (₹)</label>
+                            <input type="number" step="0.01" class="form-input" id="discharge-amount-paid" placeholder="Enter amount paid at settlement" required>
+                        </div>
+                        <button type="submit" class="btn btn-success" style="margin-top: 20px; width: 100%;">Process Settlement & Discharge</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 7. Staff View -->
+            <section id="employees" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Medical Staff & Doctor Directory</h2>
+                        <button class="btn btn-secondary" onclick="loadEmployees()">🔄 Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Staff ID</th>
+                                    <th>Name</th>
+                                    <th>Role / Specialization</th>
+                                    <th>Gender / Age</th>
+                                    <th>Salary</th>
+                                    <th>Phone Number</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. Departments View -->
+            <section id="departments" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Hospital Departments</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Department Name</th>
+                                    <th>Contact Number</th>
+                                </tr>
+                            </thead>
+                            <tbody id="departments-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 9. Ambulances View -->
+            <section id="ambulances" class="view-section">
+                <div class="panel-card">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Ambulance Fleet Status</h2>
+                        <button class="btn btn-secondary" onclick="loadAmbulances()">🔄 Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Ambulance ID</th>
+                                    <th>Plate Number</th>
+                                    <th>Driver Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ambulances-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

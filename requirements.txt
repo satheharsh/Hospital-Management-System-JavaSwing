@@ -1,3 +1,5 @@
-# Hospital Management System Python Dependencies
+# Hospital Management System Web Dependencies
+Flask>=2.2.0
+Flask-CORS>=3.0.10
 mysql-connector-python>=8.0.30
 Pillow>=9.0.0
