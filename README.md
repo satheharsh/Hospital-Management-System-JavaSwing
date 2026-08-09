@@ -1,18 +1,17 @@
-# Hospital Management System
+# Hospital Management System (Python)
 
-A comprehensive desktop application built with Java Swing to manage patient information, appointments, staff, and other hospital resources. This project streamlines administrative tasks and improves data management efficiency for a small to medium-sized hospital or clinic.
+A comprehensive desktop application built with Python and Tkinter to manage patient information, appointments, staff, room allocations, ambulance fleet, and billing workflows. This project streamlines administrative tasks and improves data management efficiency for hospitals and clinics.
 
 ---
 
 ## 🌟 Key Features
 
-- **Patient Management:** Register new patients, view, and update existing patient records.
-- **Staff Management:** Manage employee and doctor information, roles, and schedules.
-- **Department & Room Management:** Track hospital departments and manage room availability, type, and pricing.
-- **Appointment Scheduling:** Book and manage patient appointments with doctors.
-- **Ambulance Service:** View and manage the status of the hospital's ambulance fleet.
-- **Billing & Discharge:** Handle patient discharge processes and generate final billing.
-- **Database Integration:** Securely stores all data in a MySQL database for persistence and reliability.
+- **Patient Management:** Register new patients, view patient records, update billing, and manage room allocations.
+- **Staff Management:** Manage employee and doctor records, roles, salaries, and contact details.
+- **Department & Room Management:** Track hospital departments, room types, pricing, and live room availability.
+- **Ambulance Service:** Monitor fleet availability and process ambulance bookings.
+- **Billing & Discharge:** Process patient discharge, calculate pending amounts, and automatically release room availability upon discharge.
+- **Database Persistence:** Supports MySQL and automatic SQLite fallback for reliable data storage.
 
 ---
 
@@ -32,54 +31,51 @@ Here is a gallery showcasing the application's key features and modules.
 | :---: | :---: | :---: |
 | ![Room Management](Screenshots/room-management.png) | ![Search and Book Rooms](Screenshots/search-rooms.png) | ![Patient Discharge](Screenshots/patient-discharge.png) |
 
-
 ---
 
 ## 🛠️ Technologies Used
 
-- **Programming Language:** Java , OOP
-- **UI Framework:** Java Swing
-- **Database:** MySQL
-- **JDBC Driver:** MySQL Connector/J
+- **Programming Language:** Python 3.8+
+- **GUI Framework:** Tkinter / ttk
+- **Database:** MySQL / SQLite fallback
+- **Database Driver:** `mysql-connector-python`
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine.
-
 ### Prerequisites
 
-You will need to have the following installed on your machine:
-- Java Development Kit (JDK) 8 or higher
-- An IDE like Eclipse, IntelliJ IDEA, or VS Code
-- MySQL Server
+- Python 3.8 or higher installed on your machine.
 
-### Installation
+### Installation & Execution
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/ShrikarBende/Hospital-Management-System-JavaSwing.git
-    ```
-2.  **Set up the database:**
-    - Set up a local MySQL database.
-    - Update the database connection details (URL, username, password) in the Java source code to match your database configuration.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/satheharsh/Hospital-Management-System-JavaSwing.git
+   cd Hospital-Management-System-JavaSwing
+   ```
 
-3.  **Build and run the application:**
-    - Open the project in your IDE.
-    - Locate the main class (e.g., `HospitalManagementSystem.java`) and run the application.
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
+3. **Run the application:**
+   ```bash
+   python3 main.py
+   ```
+   or using the helper script:
+   ```bash
+   ./scripts/run_gui.sh
+   ```
 
-
-
+### Default Credentials
+- **Username:** `shrikar`
+- **Password:** `431001`
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-
-
-
-
+This project is licensed under the MIT License.

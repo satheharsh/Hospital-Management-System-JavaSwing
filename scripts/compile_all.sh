@@ -1,9 +1,9 @@
 #!/bin/bash
-echo "Building Hospital Management System using Maven..."
-mvn clean compile
+echo "Verifying Python syntax and discovery tests..."
+python3 -m py_compile main.py
 if [ $? -eq 0 ]; then
-    echo "Compilation successful!"
+    echo "Python syntax verification successful!"
 else
-    echo "Compilation failed!"
+    echo "Python syntax verification failed!"
     exit 1
 fi

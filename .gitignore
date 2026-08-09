@@ -1,16 +1,17 @@
-# Compiled class files
-*.class
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
 
-# Build and output directories
-bin/
-target/
-
-# Local databases and project backups
+# Databases
+*.sqlite
+*.db
 backup_*/
 backup*
 
-# Local configuration containing database credentials/passwords
-database.properties
+# Configuration containing database credentials
+database.ini
 
 # OS generated files
 Thumbs.db
@@ -21,9 +22,4 @@ Desktop.ini
 # IDE and Editor settings
 .idea/
 *.iml
-.project
-.classpath
-.settings/
 .vscode/
-*.sublime-project
-*.sublime-workspace
