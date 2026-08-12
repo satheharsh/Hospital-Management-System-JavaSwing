@@ -51,7 +51,18 @@ class DatabaseUtil:
             except Exception:
                 cls._use_sqlite = True
 
-        conn = sqlite3.connect(cls._sqlite_file)
+        sqlite_target = cls._sqlite_file
+        if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+            tmp_db = "/tmp/hospital_db.sqlite"
+            if not os.path.exists(tmp_db) and os.path.exists(cls._sqlite_file):
+                import shutil
+                try:
+                    shutil.copy(cls._sqlite_file, tmp_db)
+                except Exception:
+                    pass
+            sqlite_target = tmp_db
+
+        conn = sqlite3.connect(sqlite_target)
         conn.row_factory = sqlite3.Row
         return conn
 
