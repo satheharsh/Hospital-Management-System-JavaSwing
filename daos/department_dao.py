@@ -1,3 +1,4 @@
+import sqlite3
 from typing import List
 from models.department import Department
 from utils.database_util import DatabaseUtil
@@ -12,7 +13,7 @@ class DepartmentDAO:
             DatabaseUtil.execute(cursor, "SELECT name, phone_number FROM departments")
             rows = cursor.fetchall()
             for row in rows:
-                if isinstance(row, dict):
+                if isinstance(row, (dict, sqlite3.Row)):
                     name, phone = row['name'], row['phone_number']
                 else:
                     name, phone = row[0], row[1]

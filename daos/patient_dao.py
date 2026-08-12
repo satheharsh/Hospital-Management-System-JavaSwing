@@ -3,10 +3,12 @@ from typing import List, Optional
 from models.patient import Patient
 from utils.database_util import DatabaseUtil
 
+import sqlite3
+
 class PatientDAO:
 
     def _row_to_patient(self, row) -> Patient:
-        if isinstance(row, dict):
+        if isinstance(row, (dict, sqlite3.Row)):
             p_id = row['id']
             id_type = row['id_type']
             id_num = row['id_number']
@@ -23,9 +25,15 @@ class PatientDAO:
             p_id, id_type, id_num, name, gender, disease, adm_time, dep_amt, rm_num, pend_amt, amt_pd, dis_date = row[:12]
 
         if isinstance(adm_time, str):
-            adm_time = datetime.fromisoformat(adm_time)
+            try:
+                adm_time = datetime.fromisoformat(adm_time)
+            except ValueError:
+                adm_time = datetime.strptime(adm_time, "%Y-%m-%d %H:%M:%S")
         if dis_date and isinstance(dis_date, str):
-            dis_date = datetime.fromisoformat(dis_date)
+            try:
+                dis_date = datetime.fromisoformat(dis_date)
+            except ValueError:
+                dis_date = datetime.strptime(dis_date, "%Y-%m-%d %H:%M:%S")
 
         patient = Patient(p_id, id_type, id_num, name, gender, disease, adm_time, float(dep_amt))
         patient.room_number = rm_num

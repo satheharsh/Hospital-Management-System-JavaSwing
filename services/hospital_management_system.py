@@ -102,7 +102,12 @@ class HospitalManagementSystem:
             return False
         added = self.patient_dao.add_patient(patient)
         if added:
-            self.patients.append(patient)
+            if patient.room_number:
+                room = self.find_room_by_number(patient.room_number)
+                if room:
+                    room.available = False
+                    self.update_room(room)
+            self.patients = self.get_all_patients()
             return True
         print("Patient NOT added to database!")
         return False
@@ -125,7 +130,7 @@ class HospitalManagementSystem:
             return False
 
         patient.amount_paid += amount_paid
-        patient.pending_amount = max(0.0, patient.deposit_amount - patient.amount_paid)
+        patient.pending_amount = max(0.0, patient.pending_amount - amount_paid)
         patient.discharge_date = datetime.now()
 
         if patient.room_number:
@@ -182,7 +187,7 @@ class HospitalManagementSystem:
     def book_ambulance(self, ambulance_id: str) -> bool:
         for a in self.get_all_ambulances():
             if a.ambulance_id.lower() == ambulance_id.lower() and a.is_available:
-                return self.ambulance_dao.update_availability(ambulance_id, False)
+                return self.ambulance_dao.update_availability(a.ambulance_id, False)
         return False
 
     def release_ambulance(self, ambulance_id: str) -> bool:

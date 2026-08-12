@@ -87,6 +87,7 @@ def add_patient():
     gender = data.get("gender", "Male")
     disease = data.get("disease", "").strip()
     deposit_amount = data.get("deposit_amount", 0.0)
+    room_number = data.get("room_number")
 
     if not id_number or not name or not disease:
         return jsonify({"success": False, "message": "All required fields must be filled"}), 400
@@ -95,6 +96,8 @@ def add_patient():
         deposit_amount = float(deposit_amount)
         patient_id = get_next_patient_id()
         patient = Patient(patient_id, id_type, id_number, name, gender, disease, datetime.now(), deposit_amount)
+        if room_number:
+            patient.room_number = room_number
         if hms.add_patient(patient):
             return jsonify({"success": True, "message": f"Patient {name} ({patient_id}) admitted successfully!", "patient_id": patient_id})
         return jsonify({"success": False, "message": "Failed to save patient to database"}), 500
@@ -106,14 +109,21 @@ def update_patient():
     data = request.json or {}
     patient_id = data.get("patient_id")
     try:
-        pending_amount = float(data.get("pending_amount", 0.0))
-        amount_paid = float(data.get("amount_paid", 0.0))
         patient = hms.find_patient_by_id(patient_id)
         if not patient:
             return jsonify({"success": False, "message": "Patient not found"}), 404
-        
-        patient.pending_amount = max(0.0, pending_amount)
-        patient.amount_paid = max(0.0, amount_paid)
+
+        if "pending_amount" in data:
+            patient.pending_amount = max(0.0, float(data["pending_amount"]))
+        if "amount_paid" in data:
+            patient.amount_paid = max(0.0, float(data["amount_paid"]))
+        if "name" in data and data["name"].strip():
+            patient.name = data["name"].strip()
+        if "disease" in data and data["disease"].strip():
+            patient.disease = data["disease"].strip()
+        if "gender" in data and data["gender"].strip():
+            patient.gender = data["gender"].strip()
+
         if hms.update_patient(patient):
             return jsonify({"success": True, "message": "Patient details updated successfully"})
         return jsonify({"success": False, "message": "Failed to update patient"}), 500
@@ -179,8 +189,14 @@ def book_room():
     if not room or not patient:
         return jsonify({"success": False, "message": "Invalid room or patient selection"}), 400
 
-    if not room.available:
+    if not room.available and patient.room_number != room.room_number:
         return jsonify({"success": False, "message": "This room is already occupied"}), 400
+
+    if patient.room_number and patient.room_number != room.room_number:
+        old_room = hms.find_room_by_number(patient.room_number)
+        if old_room:
+            old_room.available = True
+            hms.update_room(old_room)
 
     room.available = False
     patient.room_number = room.room_number

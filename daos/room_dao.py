@@ -1,3 +1,4 @@
+import sqlite3
 from typing import List, Optional
 from models.room import Room
 from utils.database_util import DatabaseUtil
@@ -12,7 +13,7 @@ class RoomDAO:
             DatabaseUtil.execute(cursor, "SELECT room_number, bed_type, price, available FROM rooms")
             rows = cursor.fetchall()
             for row in rows:
-                if isinstance(row, dict):
+                if isinstance(row, (dict, sqlite3.Row)):
                     r_num, b_type, pr, av = row['room_number'], row['bed_type'], row['price'], row['available']
                 else:
                     r_num, b_type, pr, av = row[0], row[1], row[2], row[3]
@@ -32,7 +33,7 @@ class RoomDAO:
             cursor.close()
             conn.close()
             if row:
-                if isinstance(row, dict):
+                if isinstance(row, (dict, sqlite3.Row)):
                     r_num, b_type, pr, av = row['room_number'], row['bed_type'], row['price'], row['available']
                 else:
                     r_num, b_type, pr, av = row[0], row[1], row[2], row[3]

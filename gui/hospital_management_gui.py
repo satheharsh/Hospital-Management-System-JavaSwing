@@ -554,13 +554,19 @@ class HospitalManagementGUI(tk.Tk):
             row_vals = tree.item(sel_item[0])['values']
             r_num, _, _, status = row_vals[0], row_vals[1], row_vals[2], row_vals[3]
 
-            if status == "Occupied":
+            room = self.system.find_room_by_number(str(r_num))
+            patient = self.system.find_patient_by_id(pid)
+
+            if status == "Occupied" and (not patient or patient.room_number != str(r_num)):
                 messagebox.showerror("Error", "This room is already occupied!")
                 return
 
-            room = self.system.find_room_by_number(str(r_num))
-            patient = self.system.find_patient_by_id(pid)
             if room and patient:
+                if patient.room_number and patient.room_number != room.room_number:
+                    old_room = self.system.find_room_by_number(patient.room_number)
+                    if old_room:
+                        old_room.available = True
+                        self.system.update_room(old_room)
                 room.available = False
                 patient.room_number = room.room_number
                 self.system.update_room(room)

@@ -1,3 +1,4 @@
+import sqlite3
 from typing import List
 from models.ambulance import Ambulance
 from utils.database_util import DatabaseUtil
@@ -12,7 +13,7 @@ class AmbulanceDAO:
             DatabaseUtil.execute(cursor, "SELECT ambulance_id, driver_name, driver_phone, plate_number, is_available FROM ambulances")
             rows = cursor.fetchall()
             for row in rows:
-                if isinstance(row, dict):
+                if isinstance(row, (dict, sqlite3.Row)):
                     amb_id, d_name, d_phone, plate, av = (
                         row['ambulance_id'], row['driver_name'], row['driver_phone'],
                         row['plate_number'], row['is_available']

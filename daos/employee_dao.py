@@ -1,3 +1,4 @@
+import sqlite3
 from typing import List
 from models.employee import Employee
 from utils.database_util import DatabaseUtil
@@ -12,7 +13,7 @@ class EmployeeDAO:
             DatabaseUtil.execute(cursor, "SELECT employee_id, name, age, gender, salary, phone_number, email, role FROM employees")
             rows = cursor.fetchall()
             for row in rows:
-                if isinstance(row, dict):
+                if isinstance(row, (dict, sqlite3.Row)):
                     emp_id, name, age, gender, salary, phone, email, role = (
                         row['employee_id'], row['name'], row['age'], row['gender'],
                         row['salary'], row['phone_number'], row['email'], row['role']

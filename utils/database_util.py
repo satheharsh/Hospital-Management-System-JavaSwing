@@ -57,10 +57,12 @@ class DatabaseUtil:
 
     @classmethod
     def execute(cls, cursor, sql: str, params: tuple = ()):
-        # Inspect cursor module or connection type directly
         is_sqlite = False
         try:
-            if hasattr(cursor, 'connection') and isinstance(cursor.connection, sqlite3.Connection):
+            conn = getattr(cursor, 'connection', None)
+            if conn and isinstance(conn, sqlite3.Connection):
+                is_sqlite = True
+            elif type(cursor).__module__.startswith('sqlite3'):
                 is_sqlite = True
         except Exception:
             pass
@@ -70,3 +72,4 @@ class DatabaseUtil:
             sql = sql.replace("%s", "?")
             
         cursor.execute(sql, params)
+
